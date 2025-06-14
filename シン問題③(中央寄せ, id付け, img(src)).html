@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML＋CSS 擬似エディタ 第二部</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; }
+    body { display: flex; height: 100vh; }
+    #preview-area { width: 50%; border-right: 1px solid #ccc; overflow-y: auto; display: flex; flex-direction: column; }
+    #preview-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
+    #preview-label { background-color: #ddd; padding: 8px 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+    #preview-label label { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+    #preview { flex-grow: 1; padding: 20px; background-color: #f0f0f0; }
+    .editor-area { width: 50%; display: flex; flex-direction: column; overflow-y: auto; transition: width 0.3s ease; height: 100vh; }
+    .label { background-color: #ddd; padding: 8px 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+    .toggle-buttons { display: flex; gap: 12px; }
+    .toggle-buttons label { display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 14px; }
+    .editor-row { display: flex; border-bottom: 1px solid #ccc; transition: height 0.3s ease; flex-grow: 1; }
+    .collapsed { height: 0 !important; overflow: hidden !important; padding: 0 !important; border: none !important; }
+    .example, .input { flex: 1; display: flex; flex-direction: column; }
+    .editor-wrapper { display: flex; flex: 1; overflow: auto; }
+    .line-numbers { background-color: #eee; color: #666; padding: 10px 5px; text-align: right; user-select: none; font-family: monospace; font-size: 15px; line-height: 1.5em; white-space: pre; width: 40px; flex-shrink: 0; }
+    pre { margin: 0; padding: 10px; background-color: #fafafa; font-family: monospace; font-size: 15px; line-height: 1.5em; overflow: auto; white-space: pre; height: 100%; display: block; flex: 1; overflow-x: auto; }
+    textarea { width: 100%; height: 100%; padding: 10px; font-family: monospace; font-size: 15px; border: none; outline: none; resize: none; line-height: 1.5em; overflow: auto; white-space: pre; overflow-x: auto; }
+    .hidden { display: none !important; }
+    .html-css-label { min-height: 2.5em; }
+    .flash { animation: flash-bg 0.3s ease; }
+    @keyframes flash-bg { 0% { background-color: #fff8a5; } 100% { background-color: white; } }
+    .task-area { background-color: #f9f9f9; border-top: 1px solid #ccc; padding: 12px; font-size: 15px; height: 280px; overflow-y: auto; flex-shrink: 0; }
+    .editor-content { display: flex; flex-direction: column; min-height: 100%; }
+    .comment { color: red; display: none; margin-left: 20px; }
+  </style>
+</head>
+<body>
+<div id="preview-area">
+  <div id="preview-label">
+    <label><input type="checkbox" id="previewToggle" checked onchange="togglePreview()"> 📄 表示</label>
+  </div>
+  <div id="preview-wrapper"><div id="preview"></div></div>
+</div>
+
+<div class="editor-area">
+  <div class="editor-content">
+
+    <!-- HTMLエリア -->
+    <div class="label html-css-label">
+      📝 HTMLエリア
+      <div class="toggle-buttons">
+        <label id="showPreviewFallback" class="hidden"><input type="checkbox" onchange="restorePreview()"> 表示</label>
+        <label><input type="checkbox" onchange="copyExampleToInput('html')"> コピー</label>
+        <label><input type="checkbox" onchange="toggleBlockByCheckbox(this, 'html', 'Example')"> 手本</label>
+        <label><input type="checkbox" checked onchange="toggleBlockByCheckbox(this, 'html', 'InputContainer')"> 入力</label>
+      </div>
+    </div>
+
+    <div class="editor-row" id="htmlRow">
+      <div class="example hidden" id="htmlExample">
+        <div class="editor-wrapper">
+          <div class="line-numbers" id="htmlExampleLines"></div>
+          <pre>&lt;section id="day611"&gt;
+&lt;h1&gt;6/11(水)&lt;/h1&gt;
+&lt;p&gt;お城に来ました.&lt;br&gt;
+猫はいません.🐈&lt;/p&gt;
+&lt;img src="https://picsum.photos/id/193/3578" width="200"&gt;
+&lt;br&gt;
+&lt;a href="https://ja.wikipedia.org/wiki/"&gt;ウィキペディアで検索&lt;/a&gt;
+&lt;/section&gt;
+
+&lt;section id="day612"&gt;
+&lt;h1&gt;6/13(金)&lt;/h1&gt;
+&lt;p&gt;ビルの高層😱&lt;br&gt;
+鳥はいません.🐣🦆&lt;/p&gt;
+&lt;img ="https://picsum.photos/id/283/3578" width="200"&gt;
+&lt;br&gt;
+&lt;a href="https://www.google.com"&gt;グーグル検索&lt;/a&gt;
+&lt;/section&gt;</pre>
+        </div>
+      </div>
+
+      <div class="input" id="htmlInputContainer">
+        <div class="editor-wrapper">
+          <div class="line-numbers" id="htmlLines"></div>
+          <textarea id="htmlInput" placeholder="ここにHTMLを書いてください">
+<section>
+<h1>6/11(水)</h1>
+<p>お城に来ました.
+猫はいません.🐈</p>
+<img ="https://picsum.photos/id/193/3578" width="200">
+<br>
+<a href="https://ja.wikipedia.org/wiki/">ウィキペディアで検索</a>
+</section>
+
+<section>
+<h1>6/13(金)</h1>
+<p>ビルの高層😱<br>
+鳥はいません.🐣🦆</p>
+<img src="https://picsum.photos/id/283/3578" width="200">
+<br>
+<a href="https://www.google.com">グーグル検索</a>
+</section>
+          </textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSSエリア -->
+    <div class="label html-css-label">
+      🎨 CSSエリア
+      <div class="toggle-buttons">
+        <label><input type="checkbox" onchange="copyExampleToInput('css')"> コピー</label>
+        <label><input type="checkbox" onchange="toggleBlockByCheckbox(this, 'css', 'Example')"> 手本</label>
+        <label><input type="checkbox" checked onchange="toggleBlockByCheckbox(this, 'css', 'InputContainer')"> 入力</label>
+      </div>
+    </div>
+
+    <div class="editor-row" id="cssRow">
+      <div class="example hidden" id="cssExample">
+        <div class="editor-wrapper">
+          <div class="line-numbers" id="cssExampleLines"></div>
+          <pre>#day611 {
+  border-style:solid;
+  border-color:skyblue;
+  margin:10px;
+  padding:10px;
+}
+h1{
+  text-align:center;
+}
+#day613 {
+  border-style:solid;
+  border-color:lime;
+  margin:10px;
+  padding:10px;
+}
+          </pre>
+        </div>
+      </div>
+
+      <div class="input" id="cssInputContainer">
+        <div class="editor-wrapper">
+          <div class="line-numbers" id="cssLines"></div>
+          <textarea id="cssInput" placeholder="ここにCSSを書いてください">
+section {
+  border-style:solid;
+  border-color:skyblue;
+  margin:10px;
+  padding:10px;
+}
+h1{
+  
+}
+section {
+  border-style:solid;
+  border-color:lime;
+  margin:10px;
+  padding:10px;
+}
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <!-- タスクエリア -->
+    <div class="task-area">
+      <h3>💡 タスク</h3>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ①CSSエリアの8)に<br>text-align:center;
+        <div class="comment">中央寄せできましたね</div>
+      </label><br>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ②HTMLエリアの3)を<br>&lt;p&gt;お城に来ました.&lt;br&gt;
+        <div class="comment">&lt;br&gt;を打つと折り返しができます</div>
+      </label><br>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ③HTMLエリアの1)を<br>&lt;section id="day611"&gt;
+        <div class="comment">6/11のsection に day611と名前(id)をつけます</div>
+      </label><br>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ④CSSエリアの1)を<br>#day611 {
+        <div class="comment">day611の装飾を#day611として記入します</div>
+      </label><br>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ⑤HTMLエリアの10)を<br>&lt;section id="day613"&gt;
+        <div class="comment">6/13のsection に day613と名前(id)をつけます</div>
+      </label><br>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ⑥CSSエリアの10)を<br>#day613 {
+        <div class="comment">day613の装飾を#day613として記入します</div>
+      </label><br>
+
+      <label>
+        <input type="checkbox" onchange="toggleComment(this)"> ⑦HTMLエリアの5)を<br>&lt;img src="https://picsum.photos/id/193/3578" width="200"&gt;
+        <div class="comment">imgは画像貼り付け. srcはソース(sourceとは出元)を表します</div>
+      </label>
+
+    </div>
+
+  </div> <!-- editor-content終了 -->
+</div> <!-- editor-area終了 -->
+<script>
+// ▼ 手本コードのコピー機能 ▼
+function copyExampleToInput(type) {
+  const examplePre = document.querySelector(`#${type}Example pre`);
+  const inputArea = document.getElementById(`${type}Input`);
+  const lineBox = document.getElementById(`${type}Lines`);
+  const checkbox = event.target;
+  if (!examplePre || !inputArea) return;
+  inputArea.value = examplePre.textContent;
+  updateLineNumbers(inputArea, lineBox);
+  updatePreview();
+  inputArea.classList.add('flash');
+  setTimeout(() => inputArea.classList.remove('flash'), 300);
+  setTimeout(() => { checkbox.checked = false; }, 100);
+}
+
+// ▼ 入力欄の手本/入力切り替え ▼
+function toggleBlockByCheckbox(checkbox, section, target) {
+  const targetId = section + target;
+  const rowId = section + 'Row';
+  const block = document.getElementById(targetId);
+  if (checkbox.checked) block.classList.remove('hidden');
+  else block.classList.add('hidden');
+  const bothHidden = [
+    document.getElementById(section + 'Example'),
+    document.getElementById(section + 'InputContainer')
+  ].every(el => el.classList.contains('hidden'));
+  document.getElementById(rowId).classList.toggle('collapsed', bothHidden);
+}
+
+// ▼ プレビュー表示の切り替え ▼
+function togglePreview() {
+  const isChecked = document.getElementById('previewToggle').checked;
+  const previewArea = document.getElementById('preview-area');
+  const editorArea = document.querySelector('.editor-area');
+  const fallback = document.getElementById('showPreviewFallback');
+  if (isChecked) {
+    previewArea.classList.remove('hidden');
+    editorArea.style.width = '50%';
+    fallback.classList.add('hidden');
+  } else {
+    previewArea.classList.add('hidden');
+    editorArea.style.width = '100%';
+    fallback.classList.remove('hidden');
+  }
+}
+function restorePreview() {
+  document.getElementById('previewToggle').checked = true;
+  togglePreview();
+}
+
+// ▼ 行番号の更新 ▼
+function updateLineNumbers(textarea, lineBox) {
+  const lines = textarea.value.split('\n').length;
+  lineBox.innerHTML = Array.from({ length: lines }, (_, i) => `${i + 1})`).join('\n');
+}
+function updateExampleLineNumbers(pre, lineBox) {
+  const lines = pre.textContent.split('\n').length;
+  lineBox.innerHTML = Array.from({ length: lines }, (_, i) => `${i + 1})`).join('\n');
+}
+
+// ▼ プレビュー更新 ▼
+function updatePreview() {
+  const html = htmlInput.value.trim();
+  const css = `<style>${cssInput.value}</style>`;
+  preview.innerHTML = html ? css + html : "";
+  preview.querySelectorAll('a').forEach(a => a.setAttribute('target', '_blank'));
+}
+
+// ▼ タスク欄コメントの表示切り替え（今回の要） ▼
+function toggleComment(checkbox) {
+  const comment = checkbox.parentNode.querySelector('.comment');
+  if (checkbox.checked) {
+    comment.style.display = 'block';
+  } else {
+    comment.style.display = 'none';
+  }
+}
+
+// ▼ 入力欄の監視イベント登録 ▼
+const htmlInput = document.getElementById('htmlInput');
+const cssInput = document.getElementById('cssInput');
+const htmlLines = document.getElementById('htmlLines');
+const cssLines = document.getElementById('cssLines');
+const preview = document.getElementById('preview');
+
+htmlInput.addEventListener('input', () => { updatePreview(); updateLineNumbers(htmlInput, htmlLines); });
+cssInput.addEventListener('input', () => { updatePreview(); updateLineNumbers(cssInput, cssLines); });
+
+// ▼ 初回起動処理 ▼
+window.addEventListener('load', () => {
+  updatePreview();
+  updateLineNumbers(htmlInput, htmlLines);
+  updateLineNumbers(cssInput, cssLines);
+  updateExampleLineNumbers(document.querySelector('#htmlExample pre'), document.getElementById('htmlExampleLines'));
+  updateExampleLineNumbers(document.querySelector('#cssExample pre'), document.getElementById('cssExampleLines'));
+});
+</script>
+
+</body>
+</html>
