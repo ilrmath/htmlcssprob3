@@ -445,11 +445,53 @@
     }
 
     .task-item.completed {
-      border-color: var(--neon-yellow);
-      background: linear-gradient(135deg, #fff 0%, #fbffd8 100%);
+      border-color: #ff8a00;
+      background: linear-gradient(135deg, #fff176 0%, #ffd54f 58%, #ffb300 100%);
+      box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.22), 0 6px 16px rgba(255, 138, 0, 0.2);
+    }
+
+    .task-item.completed input[type="checkbox"] { accent-color: #ff8a00; }
+
+    .task-item.completed code { background: #fff9c4; }
+
+    .task-item.completed .comment {
+      border-left-color: #ff8a00;
+      background: #fff8e1;
+      color: #5d3300;
     }
 
     .task-item.completed .comment { display: block; }
+
+    .quiz-next {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border: 2px solid var(--blue);
+      border-radius: 12px;
+      color: #0f586b;
+      background: var(--blue-soft);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .quiz-next.show { display: block; animation: quizPop 0.35s ease; }
+    .quiz-next a {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      text-decoration: none;
+      box-shadow: 0 3px 0 var(--blue-dark);
+    }
+    .quiz-next a:hover { filter: brightness(1.08); }
+    .quiz-next a:focus-visible { outline: 3px solid var(--neon-yellow); outline-offset: 3px; }
+    @keyframes quizPop {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
     @media (max-height: 700px) {
       #floatingTask {
@@ -600,49 +642,55 @@ section {
     </div>
 
     <div class="task-body">
-      <label class="task-item">
+      <label class="task-item" data-task="h1TextAlign">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>① CSSエリアの <strong>8)</strong> に<br><code>text-align:center;</code> と入力</span></span>
         <span class="comment">見出しの文字が中央に寄ります。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="htmlBreak">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>② HTMLエリアの <strong>3)</strong> の末尾に<br><code>&lt;br&gt;</code> を追加</span></span>
         <span class="comment">画面上でも、その位置で改行されます。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="htmlDay611">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>③ HTMLエリアの <strong>1)</strong> を変更</span></span>
         <span class="task-change"><span>変更前</span><span>&lt;section&gt;</span><span class="arrow">↓</span><span class="new">&lt;section id="day611"&gt;</span></span>
         <span class="comment">最初のsectionに「day611」という名前をつけます。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="cssDay611">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>④ CSSエリアの <strong>1)</strong> を変更</span></span>
         <span class="task-change"><span>変更前</span><span>section {</span><span class="arrow">↓</span><span class="new">#day611 {</span></span>
         <span class="comment">day611だけに、この装飾が適用されます。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="htmlDay613">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>⑤ HTMLエリアの <strong>10)</strong> を変更</span></span>
         <span class="task-change"><span>変更前</span><span>&lt;section&gt;</span><span class="arrow">↓</span><span class="new">&lt;section id="day613"&gt;</span></span>
         <span class="comment">2つ目のsectionに「day613」という名前をつけます。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="cssDay613">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>⑥ CSSエリアの <strong>10)</strong> を変更</span></span>
         <span class="task-change"><span>変更前</span><span>section {</span><span class="arrow">↓</span><span class="new">#day613 {</span></span>
         <span class="comment">day613だけに、この装飾が適用されます。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="image193">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>⑦ HTMLエリアの <strong>5)</strong> の<br><code>〇〇</code> を <code>193</code> に変更</span></span>
         <span class="comment">お城の画像が表示されます。</span>
       </label>
 
-      <label class="task-item">
+      <label class="task-item" data-task="image283">
         <span class="task-item-main"><input type="checkbox" onchange="toggleComment(this)"><span>⑧ HTMLエリアの <strong>14)</strong> の<br><code>〇〇</code> を <code>283</code> に変更</span></span>
         <span class="comment">ビルの画像が表示されます。</span>
       </label>
+
+      <div class="quiz-next" id="quizNext">
+        🎉 全課題が完了しました。確認テストに進みましょう。<br>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdYljTzPmfKNIj4WcPOwpPum_MK5HS9qrc6qr22ujZdMBNWHA/viewform?usp=publish-editor"
+          target="_blank" rel="noopener noreferrer">test3へ進む →</a>
+      </div>
     </div>
   </aside>
 
@@ -662,6 +710,7 @@ section {
       inputArea.value = examplePre.textContent;
       updateLineNumbers(inputArea, lineBox);
       updatePreview();
+      updateTasks();
       inputArea.classList.add('flash');
       setTimeout(() => inputArea.classList.remove('flash'), 450);
       setTimeout(() => { checkbox.checked = false; }, 120);
@@ -720,10 +769,53 @@ section {
       });
     }
 
+    function normalized(value) {
+      return value.replace(/\s+/g, ' ').trim().toLowerCase();
+    }
+
+    function getTaskState() {
+      const html = htmlInput.value;
+      const css = normalized(cssInput.value);
+
+      return {
+        h1TextAlign: /h1\s*\{[^}]*text-align\s*:\s*center\s*;?[^}]*\}/.test(css),
+        htmlBreak: /<p\b[^>]*>\s*お城に来ました\.\s*<br\s*\/?>\s*猫はいません/i.test(html),
+        htmlDay611: /<section\b[^>]*\bid\s*=\s*["']day611["'][^>]*>/i.test(html),
+        cssDay611: /#day611\s*\{/.test(css),
+        htmlDay613: /<section\b[^>]*\bid\s*=\s*["']day613["'][^>]*>/i.test(html),
+        cssDay613: /#day613\s*\{/.test(css),
+        image193: /picsum\.photos\/id\/193\/3578/i.test(html),
+        image283: /picsum\.photos\/id\/283\/3578/i.test(html)
+      };
+    }
+
+    function updateTasks() {
+      const state = getTaskState();
+      const tasks = [...document.querySelectorAll('.task-item[data-task]')];
+
+      tasks.forEach(taskItem => {
+        const complete = Boolean(state[taskItem.dataset.task]);
+        const checkbox = taskItem.querySelector('input[type="checkbox"]');
+        if (checkbox) checkbox.checked = complete;
+        taskItem.classList.toggle('completed', complete);
+      });
+
+      document.getElementById('quizNext').classList.toggle(
+        'show',
+        tasks.length > 0 && tasks.every(task => state[task.dataset.task])
+      );
+    }
+
     function toggleComment(checkbox) {
+      updateTasks();
       const taskItem = checkbox.closest('.task-item');
       if (!taskItem) return;
-      taskItem.classList.toggle('completed', checkbox.checked);
+      checkbox.checked = taskItem.classList.contains('completed');
+      const tasks = [...document.querySelectorAll('.task-item input[type="checkbox"]')];
+      document.getElementById('quizNext').classList.toggle(
+        'show',
+        tasks.length > 0 && tasks.every(task => task.checked)
+      );
     }
 
     function initializeFloatingTask() {
@@ -804,11 +896,13 @@ section {
 
     htmlInput.addEventListener('input', () => {
       updatePreview();
+      updateTasks();
       updateLineNumbers(htmlInput, htmlLines);
     });
 
     cssInput.addEventListener('input', () => {
       updatePreview();
+      updateTasks();
       updateLineNumbers(cssInput, cssLines);
     });
 
@@ -821,6 +915,7 @@ section {
       updateLineNumbers(cssInput, cssLines);
       updateExampleLineNumbers(document.querySelector('#htmlExample pre'), document.getElementById('htmlExampleLines'));
       updateExampleLineNumbers(document.querySelector('#cssExample pre'), document.getElementById('cssExampleLines'));
+      updateTasks();
       initializeFloatingTask();
     });
   </script>
